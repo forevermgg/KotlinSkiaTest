@@ -1,6 +1,3 @@
-import org.apache.tools.ant.taskdefs.condition.Os
-import org.apache.tools.ant.taskdefs.condition.Os.FAMILY_MAC
-import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -65,34 +62,10 @@ tasks.test {
     useJUnitPlatform()
 }
 
-java {
-    // Java 8 is needed by jcommander's more recent versions
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
 kotlin {
     jvmToolchain(17)
 }
 
 tasks.withType<KotlinCompile>() {
     kotlinOptions.jvmTarget = "17"
-}
-
-tasks.withType<JavaExec> {
-    if (Os.isFamily(FAMILY_MAC)) {
-        jvmArgs(
-            // For macOS to run SWT under Cocoa.
-            "-XstartOnFirstThread"
-        )
-    }
-    // Assign all Java system properties from
-    // the command line to the JavaExec task.
-    systemProperties(System.getProperties().mapKeys { it.key as String })
-}
-
-tasks.withType<JavaExec> {
-    if(DefaultNativePlatform.getCurrentOperatingSystem().isMacOsX) {
-        jvmArgs("-XstartOnFirstThread")
-    }
 }
